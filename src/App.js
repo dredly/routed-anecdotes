@@ -1,17 +1,8 @@
 import { useState } from 'react'
-import { Routes, Route, useMatch, Link } from "react-router-dom"
+import { Routes, Route, useMatch, useNavigate } from "react-router-dom"
 import Menu from './components/Menu'
-
-const AnecdoteList = ({ anecdotes }) => (
-  <div>
-    <h2>Anecdotes</h2>
-    <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >
-        <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
-      </li>)}
-    </ul>
-  </div>
-)
+import AnecdoteList from './components/AnecdoteList'
+import Notification from './components/Notification'
 
 const AnecdoteDetails = ({ anecdote }) => (
   <>
@@ -49,7 +40,7 @@ const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
-
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -59,6 +50,8 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    navigate('/')
+    props.flashNotification(`a new anecdote ${content} added`, 5000)
   }
 
   return (
@@ -114,6 +107,13 @@ const App = () => {
     setAnecdotes(anecdotes.concat(anecdote))
   }
 
+  const flashNotification = (message, time) => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification('')
+    }, time)
+  }
+
   const anecdoteById = (id) =>
     anecdotes.find(a => a.id === id)
 
@@ -132,9 +132,10 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification message={notification}/>
       <Routes>
         <Route path="/anecdotes/:id" element={<AnecdoteDetails anecdote={anecdote}/>} />
-        <Route path="/create" element={<CreateNew addNew={addNew} />}/>
+        <Route path="/create" element={<CreateNew addNew={addNew} flashNotification={flashNotification} />}/>
         <Route path="/about" element={<About />}/>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />}/>
       </Routes>
