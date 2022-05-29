@@ -3,17 +3,8 @@ import  { useField } from './hooks'
 import { Routes, Route, useMatch, useNavigate } from "react-router-dom"
 import Menu from './components/Menu'
 import AnecdoteList from './components/AnecdoteList'
+import AnecdoteDetails from './components/AnecdoteDetails'
 import Notification from './components/Notification'
-
-const AnecdoteDetails = ({ anecdote }) => (
-  <>
-    <h2>{anecdote.content} by {anecdote.author}</h2>
-    <p>Has {anecdote.votes} votes</p>
-    <p>For more info see <a href={anecdote.info}>
-      {anecdote.info}</a>
-    </p>
-  </>
-)
 
 const About = () => (
   <div>
@@ -73,6 +64,11 @@ const CreateNew = (props) => {
         </div>
         <button>create</button>
       </form>
+      <button onClick={() => {
+        [content, author, info].forEach(field => {
+          field.reset()
+        })
+      }}>Reset</button>
     </div>
   )
 
